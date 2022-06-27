@@ -14,7 +14,7 @@ public class ResultVo {
     /**
      * 状态码
      */
-    private int code;
+    private String code;
 
     /**
      * 状态信息
@@ -32,7 +32,7 @@ public class ResultVo {
      * @param msg
      * @param data
      */
-    public ResultVo(int code, String msg, Object data) {
+    public ResultVo(String code, String msg, Object data) {
         this.code = code;
         this.msg = msg;
         this.data = data;

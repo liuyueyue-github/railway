@@ -10,7 +10,7 @@ public interface StatusCode {
      * get code
      * @return code
      */
-    int getCode();
+    String getCode();
 
     /**
      * get Message
