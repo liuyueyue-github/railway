@@ -1,4 +1,4 @@
-package com.liuhappy.ControllerDemo;
+package com.liuhappy.BugDemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,10 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication
 @EnableScheduling
-public class ControllerDemoApplication {
+public class BugDemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ControllerDemoApplication.class, args);
+        SpringApplication.run(BugDemoApplication.class, args);
     }
 
 }

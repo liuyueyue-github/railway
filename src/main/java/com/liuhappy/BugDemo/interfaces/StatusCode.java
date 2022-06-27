@@ -1,4 +1,4 @@
-package com.liuhappy.ControllerDemo.interfaces;
+package com.liuhappy.BugDemo.interfaces;
 
 /**
  * @author Grin

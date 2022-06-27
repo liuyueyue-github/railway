@@ -1,7 +1,7 @@
-package com.liuhappy.ControllerDemo.vo;
+package com.liuhappy.BugDemo.vo;
 
-import com.liuhappy.ControllerDemo.impl.ResultCode;
-import com.liuhappy.ControllerDemo.interfaces.StatusCode;
+import com.liuhappy.BugDemo.impl.ResultCode;
+import com.liuhappy.BugDemo.interfaces.StatusCode;
 import lombok.Data;
 
 /**

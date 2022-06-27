@@ -1,4 +1,4 @@
-package com.liuhappy.ControllerDemo.schedule;
+package com.liuhappy.BugDemo.schedule;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
