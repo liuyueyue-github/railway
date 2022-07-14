@@ -1,6 +1,6 @@
-package com.liuhappy.BugDemo.impl;
+package com.liuhappy.BugDemo.enums.impl;
 
-import com.liuhappy.BugDemo.interfaces.StatusCode;
+import com.liuhappy.BugDemo.enums.StatusCode;
 import lombok.Getter;
 
 /**

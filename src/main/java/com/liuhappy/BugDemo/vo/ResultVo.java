@@ -1,7 +1,7 @@
 package com.liuhappy.BugDemo.vo;
 
-import com.liuhappy.BugDemo.impl.ResultCode;
-import com.liuhappy.BugDemo.interfaces.StatusCode;
+import com.liuhappy.BugDemo.enums.StatusCode;
+import com.liuhappy.BugDemo.enums.impl.ResultCode;
 import lombok.Data;
 
 /**

@@ -1,4 +1,4 @@
-package com.liuhappy.BugDemo.interfaces;
+package com.liuhappy.BugDemo.enums;
 
 /**
  * @author Grin
