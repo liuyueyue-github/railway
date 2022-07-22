@@ -25,6 +25,7 @@ public class ResultVo {
      * 返回对象
      */
     private Object data;
+    private String grin;
 
     /**
      * 手动设置返回vo
