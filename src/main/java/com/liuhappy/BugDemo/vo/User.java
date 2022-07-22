@@ -24,4 +24,5 @@ public class User {
     private String username;
     private String password;
     private String hello;
+    private String hi;
 }

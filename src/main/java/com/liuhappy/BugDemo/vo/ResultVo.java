@@ -26,6 +26,7 @@ public class ResultVo {
      */
     private Object data;
     private String grin;
+    private String happy;
 
     /**
      * 手动设置返回vo
