@@ -10,7 +10,7 @@ import lombok.Data;
  * @Description
  */
 @Data
-public class ResultVo {
+public class ResultVo<T> {
     /**
      * 状态码
      */
@@ -24,7 +24,7 @@ public class ResultVo {
     /**
      * 返回对象
      */
-    private Object data;
+    private T data;
 
     /**
      * 手动设置返回vo
@@ -32,7 +32,7 @@ public class ResultVo {
      * @param msg
      * @param data
      */
-    public ResultVo(String code, String msg, Object data) {
+    public ResultVo(String code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -42,7 +42,7 @@ public class ResultVo {
      * 默认返回成功状态码，数据对象
      * @param data
      */
-    public ResultVo(Object data) {
+    public ResultVo(T data) {
         this.code = ResultCode.SUCCESS.getCode();
         this.msg = ResultCode.SUCCESS.getMsg();
         this.data = data;
@@ -53,7 +53,7 @@ public class ResultVo {
      * @param statusCode
      * @param data
      */
-    public ResultVo(StatusCode statusCode, Object data) {
+    public ResultVo(StatusCode statusCode, T data) {
         this.code = statusCode.getCode();
         this.msg = statusCode.getMsg();
         this.data = data;

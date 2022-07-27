@@ -1,10 +1,12 @@
 package com.liuhappy.BugDemo.schedule;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.liuhappy.BugDemo.service.ProductService;
+import com.liuhappy.BugDemo.vo.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * @author Grin
@@ -13,10 +15,16 @@ import java.time.format.DateTimeFormatter;
  */
 @Component
 public class TaskService {
+
+    @Autowired
+    private ProductService productService;
+
     @Scheduled(cron = "0 0/1 * * * ? ")
     public void task() {
-        System.out.println("Thread Name : "
-                + Thread.currentThread().getName() + "  i am a task : date ->  "
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        LambdaQueryWrapper<Product> queryPdNmNull = Wrappers.lambdaQuery(Product.class);
+        queryPdNmNull.eq(Product::getPdNm, "").or().eq(Product::getPdNm, null);
+        for (Product product : productService.list(queryPdNmNull)) {
+            productService.removeById(product.getPdId());
+        }
     }
 }

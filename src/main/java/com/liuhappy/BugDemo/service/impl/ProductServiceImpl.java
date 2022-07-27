@@ -1,9 +1,9 @@
 package com.liuhappy.BugDemo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.liuhappy.BugDemo.mapper.UserMapper;
-import com.liuhappy.BugDemo.service.UserService;
-import com.liuhappy.BugDemo.vo.User;
+import com.liuhappy.BugDemo.mapper.ProductMapper;
+import com.liuhappy.BugDemo.service.ProductService;
+import com.liuhappy.BugDemo.vo.Product;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,5 +12,10 @@ import org.springframework.stereotype.Service;
  * @Description
  */
 @Service("productService")
-public class ProductServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService {
+    @Override
+    public boolean addProduct(Product product) {
+        int insert = this.baseMapper.insert(product);
+        return insert > 0;
+    }
 }

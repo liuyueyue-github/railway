@@ -1,9 +1,9 @@
 package com.liuhappy.BugDemo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.liuhappy.BugDemo.mapper.UserMapper;
-import com.liuhappy.BugDemo.service.UserService;
-import com.liuhappy.BugDemo.vo.User;
+import com.liuhappy.BugDemo.mapper.CashFlowMapper;
+import com.liuhappy.BugDemo.service.CashFlowService;
+import com.liuhappy.BugDemo.vo.CashFlow;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,5 +12,5 @@ import org.springframework.stereotype.Service;
  * @Description
  */
 @Service("cashFlowService")
-public class CashFlowServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class CashFlowServiceImpl extends ServiceImpl<CashFlowMapper, CashFlow> implements CashFlowService {
 }

@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 @SpringBootTest
-class ControllerDemoApplicationTests {
+public class ControllerDemoApplicationTests {
 
     @Autowired
     private UserMapper userMapper;
