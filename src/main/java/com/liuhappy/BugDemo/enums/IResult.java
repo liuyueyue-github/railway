@@ -5,7 +5,7 @@ package com.liuhappy.BugDemo.enums;
  * @Date 2022/6/24
  * @Description
  */
-public interface StatusCode {
+public interface IResult {
     /**
      * get code
      * @return code

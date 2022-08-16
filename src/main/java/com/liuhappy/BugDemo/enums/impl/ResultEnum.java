@@ -1,6 +1,6 @@
 package com.liuhappy.BugDemo.enums.impl;
 
-import com.liuhappy.BugDemo.enums.StatusCode;
+import com.liuhappy.BugDemo.enums.IResult;
 import lombok.Getter;
 
 /**
@@ -9,17 +9,17 @@ import lombok.Getter;
  * @Description
  */
 @Getter
-public enum ResultCode implements StatusCode {
+public enum ResultEnum implements IResult {
     /**
      * enum
      */
-    SUCCESS("BUG1000", "请求成功"),
-    FAIL("BUG1001", "请求失败");
+    SUCCESS("BUG1000", "接口调用成功"),
+    FAIL("BUG1001", "接口调用失败");
 
     private final String code;
     private final String msg;
 
-    ResultCode(String code, String msg) {
+    ResultEnum(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
