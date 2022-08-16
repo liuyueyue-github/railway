@@ -20,7 +20,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/addProduct")
+    @PostMapping("product/addProduct")
     @ResponseBody
     public ResultVo<Boolean> addProduct(@RequestBody Product product) {
         boolean result = productService.addProduct(product);
