@@ -14,7 +14,6 @@ public enum ResultEnum implements IResult {
     /**
      * enum
      */
-    RUNTIME_EXCEPTION("00000000", "运行时异常"),
     SUCCESS("BUG1000", "接口调用成功"),
     FAIL("BUG1001", "接口调用失败"),
     VALIDATE_FAILED("BUG1002", "参数校验失败"),

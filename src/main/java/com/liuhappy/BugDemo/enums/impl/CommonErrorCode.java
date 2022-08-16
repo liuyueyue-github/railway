@@ -9,7 +9,12 @@ import com.liuhappy.BugDemo.enums.ErrorCode;
 public enum CommonErrorCode implements ErrorCode {
 
 
-	RuntimeException("000000", "RuntimeException");
+	RuntimeException("000000", "RuntimeException"),
+	PD_ERROR_00("PD000000","产品添加失败"),
+	PD_ERROR_01("PD000001","产品删除失败"),
+	PD_ERROR_02("PD000002","产品更新失败"),
+	PD_ERROR_03("PD000003","产品不存在")
+	;
 
 
 	private String code;
