@@ -1,7 +1,6 @@
 package com.liuhappy.BugDemo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.liuhappy.BugDemo.exception.ProjectException;
 import com.liuhappy.BugDemo.mapper.ProductMapper;
 import com.liuhappy.BugDemo.service.ProductService;
 import com.liuhappy.BugDemo.vo.Product;
@@ -17,30 +16,27 @@ import java.util.List;
 @Service("productService")
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> implements ProductService {
     @Override
-    public boolean addProduct(Product product) throws ProjectException{
-        int insert = this.baseMapper.insert(product);
-        return insert > 0;
+    public boolean addProduct(Product product){
+        return this.save(product);
     }
 
     @Override
-    public boolean deleteProduct(Product product) throws ProjectException{
-        int insert = this.baseMapper.deleteById(product.getPdId());
-        return insert > 0;
+    public boolean deleteProduct(Product product){
+        return this.removeById(product.getPdId());
     }
 
     @Override
-    public boolean updateProduct(Product product) throws ProjectException{
-        int insert = this.baseMapper.updateById(product);
-        return insert > 0;
+    public boolean updateProduct(Product product){
+        return this.updateById(product);
     }
 
     @Override
-    public Product selectProductByPdId(Product product) throws ProjectException{
+    public Product selectProductByPdId(Product product){
         return this.baseMapper.selectById(product.getPdId());
     }
 
     @Override
-    public List<Product> selectProductList() throws ProjectException{
+    public List<Product> selectProductList(){
         return this.list();
     }
 }

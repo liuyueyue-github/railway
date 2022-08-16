@@ -32,6 +32,6 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         if (body instanceof ResponseWrap) {
             return body;
         }
-        return ResponseWrapBuild.build(ResultEnum.SUCCESS,body);
+        return ResponseWrapBuild.buildSuccess(ResultEnum.SUCCESS,body);
     }
 }

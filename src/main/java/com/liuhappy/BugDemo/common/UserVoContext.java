@@ -1,6 +1,5 @@
 package com.liuhappy.BugDemo.common;
 
-import com.liuhappy.BugDemo.exception.ProjectException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
