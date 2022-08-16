@@ -1,4 +1,4 @@
-package com.liuhappy.BugDemo.vo;
+package com.liuhappy.BugDemo.common;
 
 import com.liuhappy.BugDemo.enums.IResult;
 import com.liuhappy.BugDemo.enums.impl.ResultEnum;
