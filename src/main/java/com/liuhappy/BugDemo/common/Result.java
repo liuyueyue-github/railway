@@ -28,15 +28,15 @@ public class Result<T> {
     }
 
     public static Result<?> failed() {
-        return new Result<>(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), null);
+        return new Result<>(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMsg(), "");
     }
 
     public static Result<?> failed(String message) {
-        return new Result<>(ResultEnum.FAIL.getCode(), message, null);
+        return new Result<>(ResultEnum.FAIL.getCode(), message, "");
     }
 
     public static Result<?> failed(IResult errorResult) {
-        return new Result<>(errorResult.getCode(), errorResult.getMsg(), null);
+        return new Result<>(errorResult.getCode(), errorResult.getMsg(), "");
     }
 
     public static <T> Result<T> instance(String code, String message, T data) {

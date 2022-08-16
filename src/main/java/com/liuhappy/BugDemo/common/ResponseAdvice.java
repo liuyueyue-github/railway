@@ -1,5 +1,6 @@
 package com.liuhappy.BugDemo.common;
 
+import com.liuhappy.BugDemo.enums.impl.ResultEnum;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -28,9 +29,9 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         // 提供一定的灵活度，如果body已经被包装了，就不进行包装
-        if (body instanceof Result) {
+        if (body instanceof ResponseWrap) {
             return body;
         }
-        return Result.success(body);
+        return ResponseWrapBuild.build(ResultEnum.SUCCESS,body);
     }
 }

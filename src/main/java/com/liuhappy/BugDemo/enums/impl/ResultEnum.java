@@ -14,7 +14,9 @@ public enum ResultEnum implements IResult {
      * enum
      */
     SUCCESS("BUG1000", "接口调用成功"),
-    FAIL("BUG1001", "接口调用失败");
+    FAIL("BUG1001", "接口调用失败"),
+    VALIDATE_FAILED("BUG1002", "参数校验失败"),
+    FORBIDDEN("BUG1003", "没有权限访问资源");
 
     private final String code;
     private final String msg;
