@@ -6,6 +6,8 @@ import com.liuhappy.BugDemo.service.ProductService;
 import com.liuhappy.BugDemo.vo.Product;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Grin
  * @Date 2022/7/13
@@ -17,5 +19,27 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public boolean addProduct(Product product) {
         int insert = this.baseMapper.insert(product);
         return insert > 0;
+    }
+
+    @Override
+    public boolean deleteProduct(Product product) {
+        int insert = this.baseMapper.deleteById(product.getPdId());
+        return insert > 0;
+    }
+
+    @Override
+    public boolean updateProduct(Product product) {
+        int insert = this.baseMapper.updateById(product);
+        return insert > 0;
+    }
+
+    @Override
+    public Product selectProductByPdId(Product product) {
+        return this.baseMapper.selectById(product.getPdId());
+    }
+
+    @Override
+    public List<Product> selectProductList() {
+        return this.list();
     }
 }
