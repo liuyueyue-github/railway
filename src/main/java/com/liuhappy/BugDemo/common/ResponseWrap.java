@@ -29,7 +29,7 @@ public class ResponseWrap<T> implements Serializable {
 
     private String userName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "UTC+8")
     private Date operationTime;
 
 }
