@@ -1,8 +1,8 @@
 package com.liuhappy.BugDemo.controller;
 
+import com.liuhappy.BugDemo.common.Result;
 import com.liuhappy.BugDemo.service.ProductService;
 import com.liuhappy.BugDemo.vo.Product;
-import com.liuhappy.BugDemo.common.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +21,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("product/addProduct")
-    public boolean addProduct(@RequestBody Product product) {
+    public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
     }
 

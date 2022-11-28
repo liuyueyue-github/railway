@@ -1,6 +1,7 @@
 package com.liuhappy.BugDemo.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liuhappy.BugDemo.common.Result;
 import com.liuhappy.BugDemo.vo.Product;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface ProductService extends IService<Product > {
      * @param product -
      * @return -
      */
-    boolean addProduct(Product product);
+    Product addProduct(Product product);
 
     /**
      * deleteProduct
