@@ -8,7 +8,6 @@ import com.liuhappy.BugDemo.vo.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Grin
@@ -23,7 +22,6 @@ public class TaskService {
 
     //定时删除名称为空的产品
     @Scheduled(cron = "0 0/1 * * * ? ")
-    @Transactional(rollbackFor = Exception.class)
     public void task() {
         LambdaQueryWrapper<Product> queryPdNmNull = Wrappers.lambdaQuery(Product.class);
         queryPdNmNull.eq(Product::getPdNm, "").or().eq(Product::getPdNm, null);

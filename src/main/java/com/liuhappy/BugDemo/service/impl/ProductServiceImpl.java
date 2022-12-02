@@ -8,7 +8,6 @@ import com.liuhappy.BugDemo.mapper.ProductMapper;
 import com.liuhappy.BugDemo.service.ProductService;
 import com.liuhappy.BugDemo.vo.Product;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.List;
@@ -25,7 +24,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private static final String PD = "PD";
 
     @Override
-    @Transactional
     public Product addProduct(Product product) {
         int maxPdId = this.baseMapper.selectMaxPdId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
         String pdId = PD + maxPdId;
