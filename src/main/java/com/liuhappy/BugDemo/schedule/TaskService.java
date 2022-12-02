@@ -21,7 +21,6 @@ public class TaskService {
     @Autowired
     private ProductMapper productMapper;
 
-    //定时删除名称为空的产品
     @Scheduled(cron = "0 0/1 * * * ? ")
     @Transactional(rollbackFor = Exception.class)
     public void task() {
