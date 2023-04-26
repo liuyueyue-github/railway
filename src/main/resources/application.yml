@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/BugDemo?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&useSSL=false
-    username: root
-    password: root
+    url: jdbc:mysql://aws.connect.psdb.cloud:3306/database?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8&useSSL=true
+    username: spzy7z4kwjkh2pgfii4p
+    password: pscale_pw_NRFdgCNWP680WkZE24ZnD5Ec2CNofrH9dMZ98RLANwq
 #mybatis\u914D\u7F6E
 mybatis-plus:
   # MyBaits \u522B\u540D\u5305\u626B\u63CF\u8DEF\u5F84\uFF0C\u901A\u8FC7\u8BE5\u5C5E\u6027\u53EF\u4EE5\u7ED9\u5305\u4E2D\u7684\u7C7B\u6CE8\u518C\u522B\u540D
