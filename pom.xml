@@ -8,6 +8,7 @@
         <version>2.7.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <packaging>jar</packaging>
     <groupId>com.liuhappy</groupId>
     <artifactId>beta</artifactId>
     <version>0.0.1-SNAPSHOT</version>
