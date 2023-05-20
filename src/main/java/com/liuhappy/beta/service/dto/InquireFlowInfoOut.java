@@ -20,20 +20,15 @@ import java.util.Map;
  */
 public class InquireFlowInfoOut {
 
+    //支出分类,支出金额
     private Map<String, BigDecimal> currentPaidAmtDetailMap;
 
+    //收入分类,收入金额
     private Map<String, BigDecimal> currentIncomeAmtDetailMap;
 
-    private Map<String, BigDecimal> currentPaidAmtMap;
+    //当前支出金额
+    private BigDecimal currentTotalPaidAmt;
 
-    private Map<String, BigDecimal> currentIncomeAmtMap;
-
-
-    private Map<String, BigDecimal> totalPaidAmtMap;
-
-    private Map<String, BigDecimal> totalIncomeAmtMap;
-
-    private BigDecimal totalPaidAmt;
-
-    private BigDecimal totalIncomeAmt;
+    //当前收入金额
+    private BigDecimal currentTotalIncomeAmt;
 }

@@ -16,5 +16,5 @@ import java.util.List;
  */
 @Mapper
 public interface IncomeFlowMapper extends BaseMapper<IncomeFlow> {
-    List<InquireFlowInfoIO> getCurrentInfo(InquireFlowInfoIn in);
+
 }

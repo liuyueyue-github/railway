@@ -2,6 +2,7 @@ package com.liuhappy.beta.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liuhappy.beta.service.dto.InquireFlowInfoIn;
+import com.liuhappy.beta.service.dto.InquireFlowInfoOut;
 import com.liuhappy.beta.vo.IncomeFlow;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface IncomeFlowService extends IService<IncomeFlow> {
 
     List<IncomeFlow> selectIncomeFlowByCnd(IncomeFlow inf);
 
-    IncomeFlow getCurrentInfo(InquireFlowInfoIn in);
+    InquireFlowInfoOut getCurrentInfo(InquireFlowInfoIn in);
+
+    List<IncomeFlow> inquirePaidFlowByCnd(InquireFlowInfoIn in);
 }

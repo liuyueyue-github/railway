@@ -14,6 +14,7 @@ import com.liuhappy.beta.service.CurrentAmtService;
 import com.liuhappy.beta.service.PaidCategoryService;
 import com.liuhappy.beta.service.PaidFlowService;
 import com.liuhappy.beta.service.UserService;
+import com.liuhappy.beta.service.dto.InquireFlowInfoIn;
 import com.liuhappy.beta.utils.DateUtils;
 import com.liuhappy.beta.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,5 +179,24 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
         }
 
         return this.baseMapper.selectList(paidFlowQueryWrapper);
+    }
+
+    @Override
+    public List<PaidFlow> inquirePaidFlowByCnd(InquireFlowInfoIn in) {
+        String startDt = in.getStartDt();
+        String endDt = in.getEndDt();
+        LambdaUpdateWrapper<PaidFlow> wrapper = new LambdaUpdateWrapper<>();
+
+        if (!EmptyUtil.isNullOrEmpty(in.getPaidCategoryList())) {
+            wrapper.in(PaidFlow::getPaidCategoryId, in.getPaidCategoryList());
+        }
+
+        wrapper.between(PaidFlow::getPaidYear, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(0, 4), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(0, 4));
+
+        wrapper.between(PaidFlow::getPaidMonth, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 6), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 6));
+
+        wrapper.between(PaidFlow::getPaidDt, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 8), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 8));
+
+        return this.baseMapper.selectList(wrapper);
     }
 }

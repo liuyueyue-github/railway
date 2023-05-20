@@ -1,6 +1,7 @@
 package com.liuhappy.beta.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liuhappy.beta.service.dto.InquireFlowInfoIn;
 import com.liuhappy.beta.vo.PaidFlow;
 import com.liuhappy.beta.vo.User;
 
@@ -21,4 +22,6 @@ public interface PaidFlowService extends IService<PaidFlow> {
     List<PaidFlow> selectPaidFlowList();
 
     List<PaidFlow> selectPaidFlowByCnd(PaidFlow pf);
+
+    List<PaidFlow> inquirePaidFlowByCnd(InquireFlowInfoIn in);
 }

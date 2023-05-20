@@ -24,8 +24,4 @@ public class InquireFlowInfoIn {
     private String startDt;
 
     private String endDt;
-
-    private Integer pgNbr;
-
-    private Integer pgCnt;
 }

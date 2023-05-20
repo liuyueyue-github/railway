@@ -10,6 +10,7 @@ import com.liuhappy.beta.exception.ExceptionCast;
 import com.liuhappy.beta.mapper.IncomeFlowMapper;
 import com.liuhappy.beta.service.*;
 import com.liuhappy.beta.service.dto.InquireFlowInfoIn;
+import com.liuhappy.beta.service.dto.InquireFlowInfoOut;
 import com.liuhappy.beta.utils.DateUtils;
 import com.liuhappy.beta.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Grin
@@ -32,6 +33,13 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
     @Autowired
     @Lazy
     private IncomeCategoryService incomeCategoryService;
+
+    @Autowired
+    @Lazy
+    private IncomeFlowService incomeFlowService;
+
+    @Autowired
+    private PaidFlowService paidFlowService;
 
     @Autowired
     private CurrentAmtService currentAmtService;
@@ -190,8 +198,83 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
     }
 
     @Override
-    public IncomeFlow getCurrentInfo(InquireFlowInfoIn in) {
-        this.baseMapper.getCurrentInfo(in);
-        return null;
+    public InquireFlowInfoOut getCurrentInfo(InquireFlowInfoIn in) {
+        InquireFlowInfoOut inquireFlowInfoOut = new InquireFlowInfoOut();
+        List<PaidFlow> paidFlows = paidFlowService.inquirePaidFlowByCnd(in);
+
+        //支出分类,支出金额
+        Map<String, BigDecimal> currentPaidAmtDetailMap = new HashMap<>();
+
+        //收入分类,收入金额
+        Map<String, BigDecimal> currentIncomeAmtDetailMap = new HashMap<>();
+
+        //当前支出金额
+        BigDecimal currentTotalPaidAmt = BigDecimal.ZERO;
+
+        //当前收入金额
+        BigDecimal currentTotalIncomeAmt = BigDecimal.ZERO;
+
+        Set<String> paidMethodList = new HashSet<>();
+        if (!EmptyUtil.isNullOrEmpty(paidFlows)) {
+            for (PaidFlow paidFlow : paidFlows) {
+                currentTotalPaidAmt = currentTotalPaidAmt.add(paidFlow.getPaidAmt());
+                paidMethodList.add(paidFlow.getPaidMethod());
+
+                if (currentPaidAmtDetailMap.containsKey(paidFlow.getPaidCategoryId())) {
+                    BigDecimal bigDecimal = currentPaidAmtDetailMap.get(paidFlow.getPaidCategoryId());
+                    bigDecimal = bigDecimal.add(paidFlow.getPaidAmt());
+                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryId(), bigDecimal);
+                } else {
+                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryId(), paidFlow.getPaidAmt());
+                }
+            }
+        }
+
+        if (!EmptyUtil.isNullOrEmpty(paidMethodList) && !EmptyUtil.isNullOrEmpty(in.getIncomeCategoryList())) {
+            paidMethodList.retainAll(in.getIncomeCategoryList());
+        }
+
+        in.setIncomeCategoryList(new ArrayList<>(paidMethodList));
+
+        List<IncomeFlow> incomeFlows = incomeFlowService.inquirePaidFlowByCnd(in);
+
+        if (!EmptyUtil.isNullOrEmpty(incomeFlows)) {
+            for (IncomeFlow incomeFlow : incomeFlows) {
+                currentTotalIncomeAmt = currentTotalIncomeAmt.add(incomeFlow.getIncomeAmt());
+
+                if (currentIncomeAmtDetailMap.containsKey(incomeFlow.getIncomeCategoryId())) {
+                    BigDecimal bigDecimal = currentIncomeAmtDetailMap.get(incomeFlow.getIncomeCategoryId());
+                    bigDecimal = bigDecimal.add(incomeFlow.getIncomeAmt());
+                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryId(), bigDecimal);
+                } else {
+                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryId(), incomeFlow.getIncomeAmt());
+                }
+            }
+        }
+
+        inquireFlowInfoOut.setCurrentTotalIncomeAmt(currentTotalIncomeAmt);
+        inquireFlowInfoOut.setCurrentIncomeAmtDetailMap(currentIncomeAmtDetailMap);
+        inquireFlowInfoOut.setCurrentTotalPaidAmt(currentTotalPaidAmt);
+        inquireFlowInfoOut.setCurrentPaidAmtDetailMap(currentPaidAmtDetailMap);
+
+        return inquireFlowInfoOut;
+    }
+
+    @Override
+    public List<IncomeFlow> inquirePaidFlowByCnd(InquireFlowInfoIn in) {
+        String startDt = in.getStartDt();
+        String endDt = in.getEndDt();
+        LambdaUpdateWrapper<IncomeFlow> wrapper = new LambdaUpdateWrapper<>();
+
+        if (!EmptyUtil.isNullOrEmpty(in.getIncomeCategoryList())) {
+            wrapper.in(IncomeFlow::getIncomeCategoryId, in.getIncomeCategoryList());
+        }
+
+        wrapper.between(IncomeFlow::getIncomeYear, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(0, 4), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(0, 4));
+
+        wrapper.between(IncomeFlow::getIncomeMonth, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 6), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 6));
+
+        wrapper.between(IncomeFlow::getIncomeDt, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 8), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 8));
+        return this.baseMapper.selectList(wrapper);
     }
 }
