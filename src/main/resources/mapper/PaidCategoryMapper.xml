@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liuhappy.beta.mapper.PaidCategoryMapper">
+    <select id="selectMaxPcId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+            IFNULL(MAX(right(PC.PAID_CATEGORY_ID,CHAR_LENGTH(PC.PAID_CATEGORY_ID)-2)) + 1,#{pcId})
+        FROM PAID_CATEGORY_M PC
+        WHERE PC.PAID_CATEGORY_ID LIKE CONCAT('%', DATE_FORMAT(NOW(),'%Y'), '%')
+    </select>
+</mapper>
