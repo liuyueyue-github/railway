@@ -11,7 +11,6 @@
     <packaging>jar</packaging>
     <groupId>com.liuhappy</groupId>
     <artifactId>beta</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>ControllerDemo</name>
     <description>beta</description>
     <properties>
