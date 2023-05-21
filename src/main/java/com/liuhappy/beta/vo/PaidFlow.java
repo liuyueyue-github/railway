@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 public class PaidFlow {
     private String acctNbr;
     private String paidCategoryId;
+    private String paidCategoryNm;
     private BigDecimal paidAmt;
     private String remark;
     private String paidYear;

@@ -46,6 +46,13 @@ public class IncomeCategoryServiceImpl extends ServiceImpl<IncomeCategoryMapper,
         int maxPdId = this.baseMapper.selectMaxIcId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
         String pcId = PD + maxPdId;
         ic.setIncomeCategoryId(pcId);
+
+        List<IncomeCategory> incomeCategories = this.selectIncomeCategoryByCnd(ic);
+
+        if (!EmptyUtil.isNullOrEmpty(incomeCategories)) {
+            ExceptionCast.cast(CommonErrorCode.IC_ALREADY_EXIST);
+        }
+
         boolean save = this.save(ic);
         if (!save) {
             ExceptionCast.cast(CommonErrorCode.IC_ADD);

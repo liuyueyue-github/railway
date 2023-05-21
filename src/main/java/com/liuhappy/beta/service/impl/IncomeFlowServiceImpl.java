@@ -50,6 +50,7 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
 
         IncomeCategory incomeCategory = new IncomeCategory();
         incomeCategory.setIncomeCategoryId(incomeCategoryId);
+        incomeCategory.setIncomeCategoryNm(inf.getIncomeCategoryNm());
         incomeCategory.setAcctNbr(inf.getAcctNbr());
 
         List<IncomeCategory> incomeCategories = incomeCategoryService.selectIncomeCategoryByCnd(incomeCategory);
@@ -89,11 +90,20 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
         QueryWrapper<IncomeFlow> wrapper = new QueryWrapper<>();
 
         wrapper.lambda().eq(IncomeFlow::getAcctNbr, inf.getAcctNbr())
-                .eq(IncomeFlow::getIncomeCategoryId, inf.getIncomeCategoryId())
                 .eq(IncomeFlow::getIncomeYear, inf.getIncomeYear())
                 .eq(IncomeFlow::getIncomeMonth, inf.getIncomeMonth())
                 .eq(IncomeFlow::getIncomeDt, inf.getIncomeDt())
                 .eq(IncomeFlow::getIncomeHms, inf.getIncomeHms());
+
+        if (!EmptyUtil.isNullOrEmpty(inf.getIncomeCategoryId())
+        ) {
+            wrapper.lambda().eq(IncomeFlow::getIncomeCategoryId, inf.getIncomeCategoryId());
+        }
+
+        if (!EmptyUtil.isNullOrEmpty(inf.getIncomeCategoryNm())
+        ) {
+            wrapper.lambda().eq(IncomeFlow::getIncomeCategoryNm, inf.getIncomeCategoryNm());
+        }
 
         boolean remove = this.remove(wrapper);
 
@@ -142,11 +152,20 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
         wrapper.set(IncomeFlow::getIncomeAmt, inf.getIncomeAmt())
                 .set(IncomeFlow::getRemark, inf.getRemark())
                 .eq(IncomeFlow::getAcctNbr, inf.getAcctNbr())
-                .eq(IncomeFlow::getIncomeCategoryId, inf.getIncomeCategoryId())
                 .eq(IncomeFlow::getIncomeYear, inf.getIncomeYear())
                 .eq(IncomeFlow::getIncomeMonth, inf.getIncomeMonth())
                 .eq(IncomeFlow::getIncomeDt, inf.getIncomeDt())
                 .eq(IncomeFlow::getIncomeHms, inf.getIncomeHms());
+
+        if (!EmptyUtil.isNullOrEmpty(inf.getIncomeCategoryId())
+        ) {
+            wrapper.eq(IncomeFlow::getIncomeCategoryId, inf.getIncomeCategoryId());
+        }
+
+        if (!EmptyUtil.isNullOrEmpty(inf.getIncomeCategoryNm())
+        ) {
+            wrapper.eq(IncomeFlow::getIncomeCategoryNm, inf.getIncomeCategoryNm());
+        }
 
         boolean update = this.update(wrapper);
         if (!update) {
@@ -169,7 +188,26 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
 
     @Override
     public List<IncomeFlow> selectIncomeFlowList() {
-        return this.list();
+        List<IncomeFlow> list = this.list();
+
+        _handleResult(list);
+
+        return list;
+    }
+
+    private void _handleResult(List<IncomeFlow> list) {
+        if (!EmptyUtil.isNullOrEmpty(list)) {
+            for (IncomeFlow incomeFlow : list) {
+                String acctNbr = incomeFlow.getAcctNbr();
+                String incomeCategoryId = incomeFlow.getIncomeCategoryId();
+                IncomeCategory incomeCategory = new IncomeCategory();
+                incomeCategory.setIncomeCategoryId(incomeCategoryId);
+                incomeCategory.setAcctNbr(acctNbr);
+
+                List<IncomeCategory> incomeCategories = incomeCategoryService.selectIncomeCategoryByCnd(incomeCategory);
+                incomeFlow.setIncomeCategoryNm(incomeCategories.get(0).getIncomeCategoryNm());
+            }
+        }
     }
 
     @Override
@@ -194,7 +232,11 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
             wrapperLambda.eq(IncomeFlow::getIncomeHms, inf.getIncomeHms());
         }
 
-        return this.baseMapper.selectList(wrapperLambda);
+        List<IncomeFlow> list = this.baseMapper.selectList(wrapperLambda);
+
+        _handleResult(list);
+
+        return list;
     }
 
     @Override
@@ -223,9 +265,9 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
                 if (currentPaidAmtDetailMap.containsKey(paidFlow.getPaidCategoryId())) {
                     BigDecimal bigDecimal = currentPaidAmtDetailMap.get(paidFlow.getPaidCategoryId());
                     bigDecimal = bigDecimal.add(paidFlow.getPaidAmt());
-                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryId(), bigDecimal);
+                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryNm(), bigDecimal);
                 } else {
-                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryId(), paidFlow.getPaidAmt());
+                    currentPaidAmtDetailMap.put(paidFlow.getPaidCategoryNm(), paidFlow.getPaidAmt());
                 }
             }
         }
@@ -245,9 +287,9 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
                 if (currentIncomeAmtDetailMap.containsKey(incomeFlow.getIncomeCategoryId())) {
                     BigDecimal bigDecimal = currentIncomeAmtDetailMap.get(incomeFlow.getIncomeCategoryId());
                     bigDecimal = bigDecimal.add(incomeFlow.getIncomeAmt());
-                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryId(), bigDecimal);
+                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryNm(), bigDecimal);
                 } else {
-                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryId(), incomeFlow.getIncomeAmt());
+                    currentIncomeAmtDetailMap.put(incomeFlow.getIncomeCategoryNm(), incomeFlow.getIncomeAmt());
                 }
             }
         }
@@ -275,6 +317,10 @@ public class IncomeFlowServiceImpl extends ServiceImpl<IncomeFlowMapper, IncomeF
         wrapper.between(IncomeFlow::getIncomeMonth, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 6), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 6));
 
         wrapper.between(IncomeFlow::getIncomeDt, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 8), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 8));
-        return this.baseMapper.selectList(wrapper);
+
+        List<IncomeFlow> list = this.baseMapper.selectList(wrapper);
+
+        _handleResult(list);
+        return list;
     }
 }

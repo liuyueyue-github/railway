@@ -44,6 +44,13 @@ public class PaidCategoryServiceImpl extends ServiceImpl<PaidCategoryMapper, Pai
         int maxPdId = this.baseMapper.selectMaxPcId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
         String pcId = PD + maxPdId;
         pc.setPaidCategoryId(pcId);
+
+        List<PaidCategory> paidCategories = this.selectPaidCategoryByCnd(pc);
+
+        if(!EmptyUtil.isNullOrEmpty(paidCategories)){
+            ExceptionCast.cast(CommonErrorCode.PC_ALREADY_EXIST);
+        }
+
         boolean save = this.save(pc);
         if (!save) {
             ExceptionCast.cast(CommonErrorCode.PC_ADD);
