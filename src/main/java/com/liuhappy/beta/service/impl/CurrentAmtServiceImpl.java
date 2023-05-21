@@ -85,6 +85,7 @@ public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, Current
                 totalAmt = totalAmt.add(currentAmt.getCurrentAmt());
             }
         }
+        currentAmtInfo.setTotalAmt(totalAmt);
         return currentAmtInfo;
     }
 }
