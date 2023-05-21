@@ -13,6 +13,8 @@ import com.liuhappy.beta.service.CurrentAmtService;
 import com.liuhappy.beta.service.IncomeCategoryService;
 import com.liuhappy.beta.vo.CurrentAmt;
 import com.liuhappy.beta.vo.IncomeCategory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +30,40 @@ import java.util.List;
 @Service("currentCategoryService")
 public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, CurrentAmt> implements CurrentAmtService {
 
+    @Autowired
+    @Lazy
+    private IncomeCategoryService incomeCategoryService;
+
     @Override
     public CurrentAmt addCurrentAmt(CurrentAmt ca) {
+        vaildAddOrUpdateCurrentAmt(ca);
         this.save(ca);
         return ca;
     }
 
+    private void vaildAddOrUpdateCurrentAmt(CurrentAmt ca) {
+        String acctNbr = ca.getAcctNbr();
+        String incomeCategoryId = ca.getIncomeCategoryId();
+        BigDecimal currentAmt = ca.getCurrentAmt();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(incomeCategoryId)
+                || (EmptyUtil.isNullOrEmpty(currentAmt))
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "新增或修改当前金额时候,账户/卡编号/当前金额必传");
+        }
+    }
+
+    private void vaildDeleteCurrentAmt(CurrentAmt ca) {
+        String acctNbr = ca.getAcctNbr();
+        String incomeCategoryId = ca.getIncomeCategoryId();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(incomeCategoryId)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "删除当前金额时候,账户/卡编号必传");
+        }
+    }
+
     @Override
     public boolean deleteCurrentAmt(CurrentAmt ca) {
+        vaildDeleteCurrentAmt(ca);
         LambdaQueryWrapper<CurrentAmt> wrapper = new LambdaQueryWrapper<>();
 
         wrapper.eq(CurrentAmt::getAcctNbr, ca.getAcctNbr());
@@ -49,6 +77,7 @@ public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, Current
 
     @Override
     public boolean updateCurrentAmt(CurrentAmt ca) {
+        vaildAddOrUpdateCurrentAmt(ca);
         LambdaUpdateWrapper<CurrentAmt> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(CurrentAmt::getAcctNbr, ca.getAcctNbr())
                 .eq(CurrentAmt::getIncomeCategoryId, ca.getIncomeCategoryId())
@@ -78,6 +107,8 @@ public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, Current
 
         List<CurrentAmt> list = this.list();
 
+        handleResult(list);
+
         currentAmtInfo.setCurrentAmtList(list);
         BigDecimal totalAmt = BigDecimal.ZERO;
         if (!EmptyUtil.isNullOrEmpty(list)) {
@@ -87,5 +118,18 @@ public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, Current
         }
         currentAmtInfo.setTotalAmt(totalAmt);
         return currentAmtInfo;
+    }
+
+    private void handleResult(List<CurrentAmt> list) {
+        if (!EmptyUtil.isNullOrEmpty(list)) {
+            for (CurrentAmt currentAmt : list) {
+                String incomeCategoryId = currentAmt.getIncomeCategoryId();
+                IncomeCategory inf = new IncomeCategory();
+                inf.setAcctNbr(currentAmt.getAcctNbr());
+                inf.setIncomeCategoryId(incomeCategoryId);
+                List<IncomeCategory> incomeCategories = incomeCategoryService.selectIncomeCategoryByCnd(inf);
+                currentAmt.setIncomeCategoryNm(incomeCategories.get(0).getIncomeCategoryNm());
+            }
+        }
     }
 }

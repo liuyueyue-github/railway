@@ -44,25 +44,8 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
 
     @Override
     public PaidFlow addPaidFlow(PaidFlow pf) {
-        String paidCategoryId = pf.getPaidCategoryId();
 
-        PaidCategory paidCategory = new PaidCategory();
-        paidCategory.setPaidCategoryId(paidCategoryId);
-        paidCategory.setAcctNbr(pf.getAcctNbr());
-        paidCategory.setPaidCategoryNm(pf.getPaidCategoryNm());
-
-        List<PaidCategory> paidCategoryInfo = paidCategoryService.selectPaidCategoryByCnd(paidCategory);
-
-        if (EmptyUtil.isNullOrEmpty(paidCategoryInfo)) {
-            ExceptionCast.cast(CommonErrorCode.PC_SELECT);
-        }
-
-        String currentDt = DateUtils.dateTimeNow(YYYYMMDDHHMMSS);
-        pf.setPaidYear(currentDt.substring(0, 4));
-        pf.setPaidMonth(currentDt.substring(4, 6));
-        pf.setPaidDt(currentDt.substring(4, 8));
-        pf.setPaidHms(currentDt.substring(8, 14));
-        this.save(pf);
+        vaildAddPaidFlow(pf);
 
         IncomeCategory inf = new IncomeCategory();
         inf.setAcctNbr(pf.getAcctNbr());
@@ -72,6 +55,18 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
         if (EmptyUtil.isNullOrEmpty(incomeCategories)) {
             ExceptionCast.cast(CommonErrorCode.IC_SELECT);
         }
+
+        String paidCategoryId = _getPaidCategoryId(pf);
+
+        pf.setPaidCategoryId(paidCategoryId);
+
+        String currentDt = DateUtils.dateTimeNow(YYYYMMDDHHMMSS);
+        pf.setPaidYear(currentDt.substring(0, 4));
+        pf.setPaidMonth(currentDt.substring(4, 6));
+        pf.setPaidDt(currentDt.substring(4, 8));
+        pf.setPaidHms(currentDt.substring(8, 14));
+        pf.setPaidMethod(incomeCategories.get(0).getIncomeCategoryId());
+        this.save(pf);
 
         CurrentAmt currentAmt = new CurrentAmt();
         currentAmt.setAcctNbr(pf.getAcctNbr());
@@ -92,8 +87,70 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
         return pf;
     }
 
+    private void vaildAddPaidFlow(PaidFlow pf) {
+        String paidCategoryNm = pf.getPaidCategoryNm();
+        String paidMethod = pf.getPaidMethod();
+        String acctNbr = pf.getAcctNbr();
+        BigDecimal paidAmt = pf.getPaidAmt();
+        if (EmptyUtil.isNullOrEmpty(acctNbr)
+                || EmptyUtil.isNullOrEmpty(paidMethod)
+                || EmptyUtil.isNullOrEmpty(paidAmt)
+                || EmptyUtil.isNullOrEmpty(paidCategoryNm)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "新增支出流水,账户/支出类别名称/支出金额/收入类别名称必传");
+        }
+    }
+
+    private void vaildDeletePaidFlow(PaidFlow pf) {
+        String paidYear = pf.getPaidYear();
+        String paidMonth = pf.getPaidMonth();
+        String paidDt = pf.getPaidDt();
+        String paidHms = pf.getPaidHms();
+        String acctNbr = pf.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr)
+                || EmptyUtil.isNullOrEmpty(paidYear)
+                || EmptyUtil.isNullOrEmpty(paidMonth)
+                || EmptyUtil.isNullOrEmpty(paidDt)
+                || EmptyUtil.isNullOrEmpty(paidHms)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "删除支出流水,账户/年月日时分秒必传");
+        }
+    }
+
+    private void vaildUpdatePaidFlow(PaidFlow pf) {
+        String paidYear = pf.getPaidYear();
+        String paidMonth = pf.getPaidMonth();
+        String paidDt = pf.getPaidDt();
+        String paidHms = pf.getPaidHms();
+        String acctNbr = pf.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr)
+                || EmptyUtil.isNullOrEmpty(paidYear)
+                || EmptyUtil.isNullOrEmpty(paidMonth)
+                || EmptyUtil.isNullOrEmpty(paidDt)
+                || EmptyUtil.isNullOrEmpty(paidHms)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "更新支出流水,账户/年月日时分秒必传");
+        }
+    }
+
+    private String _getPaidCategoryId(PaidFlow pf) {
+        PaidCategory paidCategory = new PaidCategory();
+        paidCategory.setPaidCategoryId(pf.getPaidCategoryId());
+        paidCategory.setAcctNbr(pf.getAcctNbr());
+        paidCategory.setPaidCategoryNm(pf.getPaidCategoryNm());
+
+        List<PaidCategory> paidCategoryInfo = paidCategoryService.selectPaidCategoryByCnd(paidCategory);
+
+        if (EmptyUtil.isNullOrEmpty(paidCategoryInfo)) {
+            ExceptionCast.cast(CommonErrorCode.PC_SELECT);
+        }
+        return paidCategoryInfo.get(0).getPaidCategoryId();
+    }
+
     @Override
     public boolean deletePaidFlow(PaidFlow pf) {
+
+        vaildDeletePaidFlow(pf);
 
         List<PaidFlow> paidFlows = this.selectPaidFlowByCnd(pf);
 
@@ -103,14 +160,7 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
                 .eq(PaidFlow::getPaidYear, pf.getPaidYear())
                 .eq(PaidFlow::getPaidMonth, pf.getPaidMonth())
                 .eq(PaidFlow::getPaidDt, pf.getPaidDt())
-                .eq(PaidFlow::getPaidHms, pf.getPaidHms());
-        if (!EmptyUtil.isNullOrEmpty(pf.getPaidCategoryId())) {
-            paidFlowQueryWrapper.lambda().eq(PaidFlow::getPaidCategoryId, pf.getPaidCategoryId());
-        }
-
-        if (!EmptyUtil.isNullOrEmpty(pf.getPaidCategoryNm())) {
-            paidFlowQueryWrapper.lambda().eq(PaidFlow::getPaidCategoryNm, pf.getPaidCategoryNm());
-        }
+                .eq(PaidFlow::getPaidHms, pf.getPaidHms()).eq(PaidFlow::getPaidCategoryId, pf.getPaidCategoryId());
 
         boolean remove = this.remove(paidFlowQueryWrapper);
 
@@ -134,6 +184,7 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
 
     @Override
     public boolean updatePaidFlow(PaidFlow pf) {
+        vaildUpdatePaidFlow(pf);
         List<PaidFlow> paidFlows = this.selectPaidFlowByCnd(pf);
 
         LambdaUpdateWrapper<PaidFlow> wrapper = new LambdaUpdateWrapper<>();
@@ -143,13 +194,6 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
                 .eq(PaidFlow::getPaidMonth, pf.getPaidMonth())
                 .eq(PaidFlow::getPaidDt, pf.getPaidDt())
                 .eq(PaidFlow::getPaidHms, pf.getPaidHms());
-        if (!EmptyUtil.isNullOrEmpty(pf.getPaidCategoryId())) {
-            wrapper.eq(PaidFlow::getPaidCategoryId, pf.getPaidCategoryId());
-        }
-
-        if (!EmptyUtil.isNullOrEmpty(pf.getPaidCategoryNm())) {
-            wrapper.eq(PaidFlow::getPaidCategoryNm, pf.getPaidCategoryNm());
-        }
 
         if (!EmptyUtil.isNullOrEmpty(pf.getPaidAmt())) {
             wrapper.set(PaidFlow::getPaidAmt, pf.getPaidAmt());
@@ -177,31 +221,32 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
             ExceptionCast.cast(CommonErrorCode.PF_UPDATE);
         }
 
-        BigDecimal incomeAmt = paidFlows.get(0).getPaidAmt();
+        if (!EmptyUtil.isNullOrEmpty(pf.getPaidAmt())) {
 
-        CurrentAmt ca = new CurrentAmt();
-        ca.setAcctNbr(pf.getAcctNbr());
-        ca.setIncomeCategoryId(paidFlows.get(0).getPaidMethod());
+            BigDecimal incomeAmt = paidFlows.get(0).getPaidAmt();
 
-        List<CurrentAmt> currentAmts = currentAmtService.selectCurrentAmtByCnd(ca);
+            CurrentAmt ca = new CurrentAmt();
+            ca.setAcctNbr(pf.getAcctNbr());
+            ca.setIncomeCategoryId(paidFlows.get(0).getPaidMethod());
 
-        if (EmptyUtil.isNullOrEmpty(pf.getPaidMethod())) {
-            if (!EmptyUtil.isNullOrEmpty(pf.getPaidAmt())) {
-                ca.setCurrentAmt(currentAmts.get(0).getCurrentAmt().add(incomeAmt).subtract(pf.getPaidAmt()));
-                currentAmtService.updateCurrentAmt(ca);
-            }
-        } else {
-            if (incomeCategoryId.equals(paidFlows.get(0).getPaidMethod())) {
+            List<CurrentAmt> currentAmts = currentAmtService.selectCurrentAmtByCnd(ca);
+
+            if (EmptyUtil.isNullOrEmpty(pf.getPaidMethod())) {
                 ca.setCurrentAmt(currentAmts.get(0).getCurrentAmt().add(incomeAmt).subtract(pf.getPaidAmt()));
                 currentAmtService.updateCurrentAmt(ca);
             } else {
-                ca.setCurrentAmt(currentAmts.get(0).getCurrentAmt().add(incomeAmt));
-                currentAmtService.updateCurrentAmt(ca);
+                if (incomeCategoryId.equals(paidFlows.get(0).getPaidMethod())) {
+                    ca.setCurrentAmt(currentAmts.get(0).getCurrentAmt().add(incomeAmt).subtract(pf.getPaidAmt()));
+                    currentAmtService.updateCurrentAmt(ca);
+                } else {
+                    ca.setCurrentAmt(currentAmts.get(0).getCurrentAmt().add(incomeAmt));
+                    currentAmtService.updateCurrentAmt(ca);
 
-                ca.setIncomeCategoryId(incomeCategoryId);
-                List<CurrentAmt> currentAmtList = currentAmtService.selectCurrentAmtByCnd(ca);
-                ca.setCurrentAmt(currentAmtList.get(0).getCurrentAmt().subtract(incomeAmt));
-                currentAmtService.updateCurrentAmt(ca);
+                    ca.setIncomeCategoryId(incomeCategoryId);
+                    List<CurrentAmt> currentAmtList = currentAmtService.selectCurrentAmtByCnd(ca);
+                    ca.setCurrentAmt(currentAmtList.get(0).getCurrentAmt().subtract(incomeAmt));
+                    currentAmtService.updateCurrentAmt(ca);
+                }
             }
         }
 
@@ -261,11 +306,7 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
 
         wrapper.between(PaidFlow::getPaidDt, EmptyUtil.isNullOrEmpty(startDt) ? "0" : startDt.substring(4, 8), EmptyUtil.isNullOrEmpty(endDt) ? "9999" : endDt.substring(4, 8));
 
-        List<PaidFlow> list = this.baseMapper.selectList(wrapper);
-
-        _handleList(list);
-
-        return list;
+        return this.baseMapper.selectList(wrapper);
     }
 
     private void _handleList(List<PaidFlow> list) {
@@ -278,14 +319,14 @@ public class PaidFlowServiceImpl extends ServiceImpl<PaidFlowMapper, PaidFlow> i
                 paidCategory.setAcctNbr(acctNbr);
 
                 List<PaidCategory> paidCategoryInfo = paidCategoryService.selectPaidCategoryByCnd(paidCategory);
-                paidFlow.setPaidCategoryNm(paidCategoryInfo.get(0).getPaidCategoryNm());
+                paidFlow.setPaidCategoryNm(EmptyUtil.isNullOrEmpty(paidCategoryInfo) ? null : paidCategoryInfo.get(0).getPaidCategoryNm());
 
                 IncomeCategory inf = new IncomeCategory();
                 inf.setAcctNbr(acctNbr);
                 inf.setIncomeCategoryId(paidFlow.getPaidMethod());
                 List<IncomeCategory> incomeCategories = incomeCategoryService.selectIncomeCategoryByCnd(inf);
 
-                paidFlow.setPaidMethod(incomeCategories.get(0).getIncomeCategoryNm());
+                paidFlow.setPaidMethod(EmptyUtil.isNullOrEmpty(incomeCategories) ? null : incomeCategories.get(0).getIncomeCategoryNm());
             }
         }
     }

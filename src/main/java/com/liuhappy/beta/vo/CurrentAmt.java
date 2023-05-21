@@ -1,5 +1,6 @@
 package com.liuhappy.beta.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +22,7 @@ import java.math.BigDecimal;
 public class CurrentAmt {
     private String acctNbr;
     private String incomeCategoryId;
+    @TableField(exist = false)
+    private String incomeCategoryNm;
     private BigDecimal currentAmt;
 }

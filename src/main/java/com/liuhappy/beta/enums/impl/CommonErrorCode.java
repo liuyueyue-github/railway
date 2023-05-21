@@ -28,7 +28,9 @@ public enum CommonErrorCode implements ErrorCode {
 
     IF_ADD("IF000000", "收入流水添加失败"),
     IF_DELETE("IF000001", "收入流水删除失败"),
-    IF_UPDATE("IF000002", "收入流水更新失败")
+    IF_UPDATE("IF000002", "收入流水更新失败"),
+
+    USER_DEFINED("999999999", "用户自定义")
     ;
 
 

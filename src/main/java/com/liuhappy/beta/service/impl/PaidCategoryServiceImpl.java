@@ -11,6 +11,7 @@ import com.liuhappy.beta.service.CurrentAmtService;
 import com.liuhappy.beta.service.PaidCategoryService;
 import com.liuhappy.beta.service.PaidFlowService;
 import com.liuhappy.beta.vo.CurrentAmt;
+import com.liuhappy.beta.vo.IncomeCategory;
 import com.liuhappy.beta.vo.PaidCategory;
 import com.liuhappy.beta.vo.PaidFlow;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +42,16 @@ public class PaidCategoryServiceImpl extends ServiceImpl<PaidCategoryMapper, Pai
     @Override
     @Transactional
     public PaidCategory addPaidCategory(PaidCategory pc) {
+        vaildAddPaidCategory(pc);
+        List<PaidCategory> paidCategories = this.selectPaidCategoryByCnd(pc);
+
+        if (!EmptyUtil.isNullOrEmpty(paidCategories)) {
+            ExceptionCast.cast(CommonErrorCode.PC_ALREADY_EXIST);
+        }
+
         int maxPdId = this.baseMapper.selectMaxPcId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
         String pcId = PD + maxPdId;
         pc.setPaidCategoryId(pcId);
-
-        List<PaidCategory> paidCategories = this.selectPaidCategoryByCnd(pc);
-
-        if(!EmptyUtil.isNullOrEmpty(paidCategories)){
-            ExceptionCast.cast(CommonErrorCode.PC_ALREADY_EXIST);
-        }
 
         boolean save = this.save(pc);
         if (!save) {
@@ -58,8 +60,35 @@ public class PaidCategoryServiceImpl extends ServiceImpl<PaidCategoryMapper, Pai
         return pc;
     }
 
+    private void vaildAddPaidCategory(PaidCategory pc) {
+        String paidCategoryNm = pc.getPaidCategoryNm();
+        String acctNbr = pc.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(paidCategoryNm)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "新增支出种类,账户/收入名称必传");
+        }
+    }
+
+    private void vaildDeletePaidCategory(PaidCategory pc) {
+        String paidCategoryId = pc.getPaidCategoryId();
+        String acctNbr = pc.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(paidCategoryId)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "删除支出种类,账户/支出编号必传");
+        }
+    }
+    private void vaildUpdatePaidCategory(PaidCategory pc) {
+        String paidCategoryId = pc.getPaidCategoryId();
+        String acctNbr = pc.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(paidCategoryId)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "修改支出种类,账户/支出编号必传");
+        }
+    }
+
     @Override
     public boolean deletePaidCategory(PaidCategory pc) {
+        vaildDeletePaidCategory(pc);
         LambdaQueryWrapper<PaidCategory> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PaidCategory::getAcctNbr, pc.getAcctNbr())
                 .eq(PaidCategory::getPaidCategoryId, pc.getPaidCategoryId());
@@ -74,6 +103,7 @@ public class PaidCategoryServiceImpl extends ServiceImpl<PaidCategoryMapper, Pai
 
         if (!EmptyUtil.isNullOrEmpty(paidFlows)) {
             for (PaidFlow paidFlow : paidFlows) {
+                paidFlowService.deletePaidFlow(paidFlow);
                 String paidMethod = paidFlow.getPaidMethod();
                 BigDecimal paidAmt = paidFlow.getPaidAmt();
                 CurrentAmt ca = new CurrentAmt();
@@ -93,6 +123,7 @@ public class PaidCategoryServiceImpl extends ServiceImpl<PaidCategoryMapper, Pai
 
     @Override
     public boolean updatePaidCategory(PaidCategory pc) {
+        vaildUpdatePaidCategory(pc);
         LambdaUpdateWrapper<PaidCategory> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(PaidCategory::getPaidCategoryNm, pc.getPaidCategoryNm())
                 .eq(PaidCategory::getPaidCategoryId, pc.getPaidCategoryId())

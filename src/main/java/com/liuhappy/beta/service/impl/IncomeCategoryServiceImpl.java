@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -43,15 +44,16 @@ public class IncomeCategoryServiceImpl extends ServiceImpl<IncomeCategoryMapper,
     @Override
     @Transactional
     public IncomeCategory addIncomeCategory(IncomeCategory ic) {
-        int maxPdId = this.baseMapper.selectMaxIcId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
-        String pcId = PD + maxPdId;
-        ic.setIncomeCategoryId(pcId);
-
+        vaildAddIncomeCategory(ic);
         List<IncomeCategory> incomeCategories = this.selectIncomeCategoryByCnd(ic);
 
         if (!EmptyUtil.isNullOrEmpty(incomeCategories)) {
             ExceptionCast.cast(CommonErrorCode.IC_ALREADY_EXIST);
         }
+
+        int maxPdId = this.baseMapper.selectMaxIcId(Calendar.getInstance().get(Calendar.YEAR) + STR_INIT_SEQ);
+        String pcId = PD + maxPdId;
+        ic.setIncomeCategoryId(pcId);
 
         boolean save = this.save(ic);
         if (!save) {
@@ -60,8 +62,35 @@ public class IncomeCategoryServiceImpl extends ServiceImpl<IncomeCategoryMapper,
         return ic;
     }
 
+    private void vaildAddIncomeCategory(IncomeCategory ic) {
+        String incomeCategoryNm = ic.getIncomeCategoryNm();
+        String acctNbr = ic.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(incomeCategoryNm)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "新增收入种类,账户/收入名称必传");
+        }
+    }
+
+    private void vaildDeleteIncomeCategory(IncomeCategory ic) {
+        String incomeCategoryId = ic.getIncomeCategoryId();
+        String acctNbr = ic.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(incomeCategoryId)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "删除收入种类,账户/收入编号必传");
+        }
+    }
+    private void vaildUpdateIncomeCategory(IncomeCategory ic) {
+        String incomeCategoryId = ic.getIncomeCategoryId();
+        String acctNbr = ic.getAcctNbr();
+        if (EmptyUtil.isNullOrEmpty(acctNbr) || EmptyUtil.isNullOrEmpty(incomeCategoryId)
+        ) {
+            ExceptionCast.castWithCodeAndDesc(CommonErrorCode.USER_DEFINED.getCode(), "修改收入种类,账户/收入编号必传");
+        }
+    }
+
     @Override
     public boolean deleteIncomeCategory(IncomeCategory ic) {
+        vaildDeleteIncomeCategory(ic);
         LambdaQueryWrapper<IncomeCategory> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(IncomeCategory::getAcctNbr, ic.getAcctNbr())
                 .eq(IncomeCategory::getIncomeCategoryId, ic.getIncomeCategoryId());
@@ -91,6 +120,7 @@ public class IncomeCategoryServiceImpl extends ServiceImpl<IncomeCategoryMapper,
 
     @Override
     public boolean updateIncomeCategory(IncomeCategory ic) {
+        vaildUpdateIncomeCategory(ic);
         LambdaUpdateWrapper<IncomeCategory> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(IncomeCategory::getIncomeCategoryNm, ic.getIncomeCategoryNm())
                 .eq(IncomeCategory::getIncomeCategoryId, ic.getIncomeCategoryId())
