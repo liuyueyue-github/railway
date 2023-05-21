@@ -1,6 +1,7 @@
 package com.liuhappy.beta.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liuhappy.beta.controller.dto.CurrentAmtInfo;
 import com.liuhappy.beta.vo.CurrentAmt;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public interface CurrentAmtService extends IService<CurrentAmt> {
     
     boolean updateCurrentAmt(CurrentAmt ca);
 
-    
+
     List<CurrentAmt> selectCurrentAmtByCnd(CurrentAmt ca);
 
-    
-    List<CurrentAmt> selectCurrentAmtList();
+
+    CurrentAmtInfo selectCurrentAmtList();
 }

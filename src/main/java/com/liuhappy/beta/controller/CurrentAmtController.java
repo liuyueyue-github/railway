@@ -1,5 +1,6 @@
 package com.liuhappy.beta.controller;
 
+import com.liuhappy.beta.controller.dto.CurrentAmtInfo;
 import com.liuhappy.beta.service.CurrentAmtService;
 import com.liuhappy.beta.vo.CurrentAmt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class CurrentAmtController {
     }
 
     @PostMapping("/selectCurrentAmtList")
-    public List<CurrentAmt> selectCurrentAmtList() {
+    public CurrentAmtInfo selectCurrentAmtList() {
         return currentAmtService.selectCurrentAmtList();
     }
 }

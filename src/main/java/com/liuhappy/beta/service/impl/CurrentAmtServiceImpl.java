@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liuhappy.beta.common.EmptyUtil;
+import com.liuhappy.beta.controller.dto.CurrentAmtInfo;
 import com.liuhappy.beta.enums.impl.CommonErrorCode;
 import com.liuhappy.beta.exception.ExceptionCast;
 import com.liuhappy.beta.mapper.CurrentAmtMapper;
@@ -15,6 +16,7 @@ import com.liuhappy.beta.vo.IncomeCategory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 
@@ -70,7 +72,19 @@ public class CurrentAmtServiceImpl extends ServiceImpl<CurrentAmtMapper, Current
     }
 
     @Override
-    public List<CurrentAmt> selectCurrentAmtList() {
-        return this.list();
+    public CurrentAmtInfo selectCurrentAmtList() {
+
+        CurrentAmtInfo currentAmtInfo = new CurrentAmtInfo();
+
+        List<CurrentAmt> list = this.list();
+
+        currentAmtInfo.setCurrentAmtList(list);
+        BigDecimal totalAmt = BigDecimal.ZERO;
+        if (!EmptyUtil.isNullOrEmpty(list)) {
+            for (CurrentAmt currentAmt : list) {
+                totalAmt = totalAmt.add(currentAmt.getCurrentAmt());
+            }
+        }
+        return currentAmtInfo;
     }
 }
